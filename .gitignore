@@ -1,0 +1,9 @@
+cmake-build-*
+build/
+.idea/
+*.hex
+*.uf2
+*.elf
+*.map
+__pycache__/
+generated_*.h
