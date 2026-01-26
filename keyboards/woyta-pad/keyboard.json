@@ -1,0 +1,50 @@
+{
+  "meta": {
+    "name": "Woyta Pad",
+    "version": "1.0.0",
+    "maintainer": "Woyta",
+    "mcu": "rp2040"
+  },
+  "usb": {
+    "vid": "0xCAFE",
+    "pid": "0x4242",
+    "device_ver": "0x0001",
+    "manufacturer": "Woyta",
+    "product": "Woyta Pad",
+    "polling_interval": 1
+  },
+  "matrix": {
+    "rows": 4,
+    "cols": 5,
+    "row_pins": [8, 7, 6, 5],
+    "col_pins": [13, 12, 11, 10, 9],
+    "diode_direction": "COL2ROW"
+  },
+  "encoders": {
+    "enabled": true,
+    "pins": [
+      {
+        "pad_a": 14,
+        "pad_b": 15,
+        "click_pin": 28,
+        "resolution": 4
+      },
+      {
+        "pad_a": 26,
+        "pad_b": 27,
+        "click_pin": 29,
+        "resolution": 4
+      }
+    ]
+  },
+  "oled": {
+    "enabled": true,
+    "driver": "ssd1306",
+    "width": 128,
+    "height": 32,
+    "i2c_sda": 0,
+    "i2c_scl": 1,
+    "i2c_address": "0x3C",
+    "flip": false
+  }
+}
