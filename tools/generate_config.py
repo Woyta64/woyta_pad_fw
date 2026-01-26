@@ -23,6 +23,7 @@ def generate_header(json_path, header_path):
     matrix = data.get("matrix", {})
     row_pins = matrix.get("row_pins", [])
     col_pins = matrix.get("col_pins", [])
+    direction = matrix.get("diode_direction", "COL2ROW")
 
     # meta/usb sections
     meta = data.get("meta", {})
@@ -44,8 +45,11 @@ def generate_header(json_path, header_path):
         "// Hardware Definitions",
         f"#define MATRIX_ROWS {len(row_pins)}",
         f"#define MATRIX_COLS {len(col_pins)}",
+        "",
         f"#define MATRIX_ROW_PINS {{ {', '.join(map(str, row_pins))} }}",
         f"#define MATRIX_COL_PINS {{ {', '.join(map(str, col_pins))} }}",
+        "",
+        f"#define DIODE_DIRECTION_{direction}",
         "",
         "// USB Identity",
         # Note: We manually add quotes \" around strings for C
