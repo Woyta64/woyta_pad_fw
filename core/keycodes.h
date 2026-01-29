@@ -271,5 +271,3 @@
 #define KC_MEDIA_COFFEE 0xf9
 #define KC_MEDIA_REFRESH 0xfa
 #define KC_MEDIA_CALC 0xfb
-
-#endif // USB_HID_KEYS
