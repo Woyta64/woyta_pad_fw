@@ -1,4 +1,5 @@
 #include "tusb.h"
+#include "generated_config.h"
 
 // --- 1. DEVICE DESCRIPTOR ---
 tusb_desc_device_t const desc_device = {

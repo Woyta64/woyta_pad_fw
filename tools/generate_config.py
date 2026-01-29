@@ -2,6 +2,8 @@ import json
 import sys
 import os
 import re
+from gc import enable
+
 
 def remove_comments(json_str):
     pattern = r'(//[^\n]*)|(/\*[\s\S]*?\*/)'
@@ -25,6 +27,10 @@ def generate_header(json_path, header_path):
     col_pins = matrix.get("col_pins", [])
     direction = matrix.get("diode_direction", "COL2ROW")
 
+    encoders = data.get("encoders", {})
+    enable_encoder = encoders.get("enabled", False)
+    encoder_pins = encoders.get("pins", [])
+
     # meta/usb sections
     meta = data.get("meta", {})
     usb  = data.get("usb", {})
@@ -37,10 +43,22 @@ def generate_header(json_path, header_path):
     pid = usb.get("pid", "0x4242")
     bcd_device = usb.get("device_ver", "0x0100")
 
-    # --- Generate Content ---
+    oled = data.get("oled", {})
+    enable_oled = oled.get("enabled", False)
+    oled_sda = oled.get("oled_sda")
+    oled_scl = oled.get("oled_scl")
+
+
     content = [
         "// AUTO-GENERATED FILE. DO NOT EDIT.",
         "#pragma once",
+        "",
+        "// USB Identity",
+        f'#define USB_MANUFACTURER "{manufacturer}"',
+        f'#define USB_PRODUCT      "{product}"',
+        f'#define USB_VID          {vid}',
+        f'#define USB_PID          {pid}',
+        f'#define USB_BCD          {bcd_device}',
         "",
         "// Hardware Definitions",
         f"#define MATRIX_ROWS {len(row_pins)}",
@@ -51,15 +69,40 @@ def generate_header(json_path, header_path):
         "",
         f"#define DIODE_DIRECTION_{direction}",
         "",
-        "// USB Identity",
-        # Note: We manually add quotes \" around strings for C
-        f'#define USB_MANUFACTURER "{manufacturer}"',
-        f'#define USB_PRODUCT      "{product}"',
-        f'#define USB_VID          {vid}',
-        f'#define USB_PID          {pid}',
-        f'#define USB_BCD          {bcd_device}',
-        ""
     ]
+
+    if enable_encoder and encoder_pins:
+        content.append("#define ENABLE_ENCODER true")
+        content.append(f"#define ENCODER_COUNT {len(encoder_pins)}")
+
+        pad_a_pins = [enc.get("pad_a", 0) for enc in encoder_pins]
+        pad_b_pins = [enc.get("pad_b", 0) for enc in encoder_pins]
+        click_pins = [enc.get("click_pin", 0) for enc in encoder_pins]
+        resolutions = [enc.get("resolution", 4) for enc in encoder_pins]
+
+        content.append(f"#define ENCODER_PAD_A_PINS {{ {', '.join(map(str, pad_a_pins))} }}")
+        content.append(f"#define ENCODER_PAD_B_PINS {{ {', '.join(map(str, pad_b_pins))} }}")
+        content.append(f"#define ENCODER_CLICK_PINS {{ {', '.join(map(str, click_pins))} }}")
+        content.append(f"#define ENCODER_RESOLUTIONS {{ {', '.join(map(str, resolutions))} }}")
+    else:
+        content.append("#define ENABLE_ENCODER false")
+
+    if enable_oled and oled_sda and oled_scl:
+        oled_width = oled.get("width", 128)
+        oled_height = oled.get("height", 32)
+
+        content.append("")
+        content.append("#define ENABLE_OLED true")
+        content.append(f"#define OLED_SDA_PIN {oled_sda}")
+        content.append(f"#define OLED_SCL_PIN {oled_scl}")
+        content.append(f"#define OLED_WIDTH {oled_width}")
+        content.append(f"#define OLED_HEIGHT {oled_height}")
+    else:
+        content.append("")
+        content.append("#define ENABLE_OLED false")
+
+
+    content.append("")
 
     with open(header_path, 'w') as f:
         f.write('\n'.join(content))
