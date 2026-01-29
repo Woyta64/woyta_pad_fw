@@ -39,12 +39,9 @@
   },
   "oled": {
     "enabled": true,
-    "driver": "ssd1306",
     "width": 128,
     "height": 32,
-    "i2c_sda": 0,
-    "i2c_scl": 1,
-    "i2c_address": "0x3C",
-    "flip": false
+    "oled_sda": 0,
+    "oled_scl": 1
   }
 }

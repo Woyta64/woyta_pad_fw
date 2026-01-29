@@ -35,32 +35,40 @@ add_custom_command(
         COMMENT "Generating config header from ${kb}/keyboard.json..."
 )
 
-# --- 4. BUILD EXECUTABLE ---
+# --- 4. ADD EXTERNAL LIBRARIES ---
+# Add pico-ssd1306 library for OLED support
+add_subdirectory(lib/pico-ssd1306)
+
+# --- 5. BUILD EXECUTABLE ---
 add_executable(woyta_pad
         core/main.c
         core/usb_descriptors.c
         core/matrix.c
         ${KEYBOARD_DIR}/keymap.c
         ${GENERATED_KEYBOARD_HEADER}
+        core/encoder.c
+        core/encoder.h
 )
 
-# --- 5. INCLUDE DIRECTORIES ---
+# --- 6. INCLUDE DIRECTORIES ---
 target_include_directories(woyta_pad PRIVATE
         core
         ${KEYBOARD_DIR}
         ${GENERATED_HEADERS_DIRECTORY}
 )
 
-# --- 6. LIBRARIES ---
+# --- 7. LIBRARIES ---
 target_link_libraries(woyta_pad
         pico_stdlib
         tinyusb_device
         tinyusb_board
+        hardware_i2c
+        pico_ssd1306
 )
 
-# --- 7. USB CONFIG ---
+# --- 8. USB CONFIG ---
 pico_enable_stdio_usb(woyta_pad 0)
 pico_enable_stdio_uart(woyta_pad 1)
 
-# --- 8. OUTPUT ---
+# --- 9. OUTPUT ---
 pico_add_extra_outputs(woyta_pad)
